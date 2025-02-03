@@ -23,8 +23,8 @@ public class Main {
             System.out.println("请输入x的值");
             double x = s1.nextDouble();
             SecondFunctionCalc secondFunctionCalc = new SecondFunctionCalc(a,b,c);
-            System.out.println("Result："+secondFunctionCalc.calculate(x));
-        } catch (ArithmeticException | NameNotFoundException e) {
+            System.out.println("Result："+secondFunctionCalc.calculate(1));
+        } catch (ArithmeticException e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,4 +1,4 @@
-import net.chen.Login;
+package net.chen;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,7 +11,6 @@ public class MemoryMonitor {
         this.login = login;
         this.timer = new Timer();
     }
-
     public void start() {
         timer.schedule(new TimerTask() {
             @Override

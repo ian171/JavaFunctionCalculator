@@ -57,6 +57,26 @@ public class TrigonometricFunction {
                 throw new NumberFormatException("请输入数字");
             }
 
+        } else if (Objects.equals(comboBox1.getSelectedItem(),"Cotangent")) {
+            try {
+                calculate = (double) trigonometricFunctionCalc.Cotangent((int) Double.parseDouble(Asking.getText()));
+            } catch (NumberFormatException e) {
+                throw new  NumberFormatException("请输入数字");
+            }
+        }
+        else if (Objects.equals(comboBox1.getSelectedItem(),"Cosecant")) {
+            try {
+                calculate = (double) trigonometricFunctionCalc.Cosecant((int) Double.parseDouble(Asking.getText()));
+            } catch (NumberFormatException e) {
+                throw new  NumberFormatException("请输入数字");
+            }
+        }
+        else if (Objects.equals(comboBox1.getSelectedItem(),"Secant")) {
+            try {
+                calculate = (double) trigonometricFunctionCalc.Secant((int) Double.parseDouble(Asking.getText()));
+            } catch (NumberFormatException e) {
+                throw new  NumberFormatException("请输入数字");
+            }
         }
 
         Object[] obj = new Object[1];

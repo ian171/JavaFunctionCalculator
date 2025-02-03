@@ -14,4 +14,7 @@ public class FirstFunctionCalc {
             return k * x + b;
         }
     }
+    public double calction(double x){
+        return k * x + b;
+    }
 }

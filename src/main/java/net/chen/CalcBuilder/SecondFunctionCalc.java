@@ -4,25 +4,53 @@ import javax.naming.NameNotFoundException;
 import javax.swing.*;
 
 public class SecondFunctionCalc {
-    double a;
-    double b;
-    double c;
+    static double a;
+    static double b;
+    static double c;
+    double r;
+    double r2;
+    public static double RealPart;
+    public static double imagPart;
+    static boolean hasUnRoot = false;
     public SecondFunctionCalc(double a, double b, double c) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
+        SecondFunctionCalc.a = a;
+        SecondFunctionCalc.b = b;
+        SecondFunctionCalc.c = c;
     }
-    public double calculate(double x) throws NameNotFoundException {
-        if (a != 0) {
-            double Delta = b * b - 4 * a * c;
-            if (Delta < 0){
-                JOptionPane.showMessageDialog(null,"Not A Normal Function Expression.Delta is: "+Delta+" \n结果可能不准确","Error", JOptionPane.WARNING_MESSAGE);
-            }
-            return a * x * x + b * x + c;
+
+    public  void Acalculate() {
+        if(Delta() > 0){
+            r = (-b + Math.sqrt(Delta()))/(2 * a );
+            r2 = (-b - Math.sqrt(Delta()))/(2 * a );
         }
-        throw new NameNotFoundException("a cannot be 0");
     }
-    public double Delta(){
+    public void Bcalculate() {
+        if (Delta() < 0 ){
+            hasUnRoot = true;
+            RealPart = -b / (2 * a);
+            imagPart = Math.sqrt(Math.abs(Delta())) / (2 * a);
+        }
+    }
+    public double calculate(int result){
+        if (hasUnRoot) {
+            return result == 1 ? RealPart + imagPart : RealPart - imagPart;
+        } else {
+            return result == 1 ? r : r2;
+        }
+    }
+    public static double Delta(){
         return b * b - 4 * a * c;
+    }
+    public static boolean isHasUnRoot() {
+        return hasUnRoot;
+    }
+    public static void setHasUnRoot(boolean hasUnRoot) {
+        SecondFunctionCalc.hasUnRoot = hasUnRoot;
+    }
+    public double calction(double x){
+        return a * x * x + b * x + c;
+    }
+    public void close(){
+
     }
 }

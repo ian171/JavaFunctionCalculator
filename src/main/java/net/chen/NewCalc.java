@@ -2,6 +2,8 @@ package net.chen;
 
 import net.chen.CalcBuilder.FirstFunctionCalc;
 import net.chen.CalcBuilder.SecondFunctionCalc;
+import net.chen.CalcBuilder.XType;
+import net.chen.TypeRenderer.TypeRenderer;
 
 import javax.naming.NameNotFoundException;
 import javax.swing.*;
@@ -13,7 +15,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.sql.Time;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import static net.chen.CalcBuilder.XType.FIRST;
+import static net.chen.CalcBuilder.XType.SECOND;
 
 public class NewCalc extends JDialog {
     private JPanel contentPane;
@@ -38,6 +46,7 @@ public class NewCalc extends JDialog {
     private JSlider aSlider;
     private JSlider bSlider;
     private JButton Delta;
+    private JLabel MemorizeUsage;
     private JButton buttonOK;
     static NewCalc dialog = new NewCalc();
     int ClickCount = 0;
@@ -199,8 +208,10 @@ public class NewCalc extends JDialog {
                 if (comboBox1.getSelectedItem() == null){//判断下拉菜单是否为空
                     System.out.println("Loading...");
                 }else {
+                    SliderControl.setVisible(true);
                 if (comboBox1.getSelectedItem().equals("三角函数")) {
                     if (!p) {
+                        SliderControl.setVisible(true);
                         isTrigonometricUIOpened = true;
                         CalcField.setVisible(false);
                         SliderControl.setVisible(false);
@@ -208,6 +219,7 @@ public class NewCalc extends JDialog {
                         new TrigonometricFunction();
                     }
                     } else if (comboBox1.getSelectedItem().equals("一次函数")) {
+                    SliderControl.setVisible(true);
                         CSlider.setVisible(false);
                         CSliderText.setVisible(false);
                         CalcField.setVisible(true);
@@ -215,9 +227,23 @@ public class NewCalc extends JDialog {
                         C.setVisible(false);
 
                     } else if (comboBox1.getSelectedItem().equals("二次函数")) {
-                        CSlider.setVisible(false);
-                        CSliderText.setVisible(false);
+                        SliderControl.setVisible(true);
+                        CSlider.setVisible(true);
+                        CSliderText.setVisible(true);
                         CalcField.setVisible(true);
+                    } else if (comboBox1.getSelectedItem().equals("一元二次方程计算")) {
+                        SliderControl.setVisible(true);
+                        CSlider.setVisible(true);
+                        CSliderText.setVisible(true);
+                        C.setVisible(true);
+                        textField2.setVisible(true);
+                    } else if (comboBox1.getSelectedItem().equals("一元一次方程计算")) {
+                        SliderControl.setVisible(true);
+                        CSlider.setVisible(false);
+                        C.setVisible(false);
+                        C.setVisible(false);
+                        textField2.setVisible(false);
+
                 }
                 }
             }
@@ -285,6 +311,21 @@ public class NewCalc extends JDialog {
                 JOptionPane.showMessageDialog(null, "△=" + sf.Delta(), "△", JOptionPane.INFORMATION_MESSAGE);
             }
         });
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                monitor();
+            }
+        }, 0, 100);
+
+
+    }
+    public void monitor() {
+        Runtime runtime = Runtime.getRuntime();
+        long freeMemory = runtime.freeMemory();
+        MemorizeUsage.setText(TypeRenderer.getNetFileSizeDescription(freeMemory));
+        runtime = null;
 
     }
     public void onOpenWeb() throws RuntimeException {
@@ -302,6 +343,7 @@ public class NewCalc extends JDialog {
     }
     private void onCalc() throws NameNotFoundException {
         Double calculate = null;
+        Double calculate1 = null;
         if(Objects.equals(comboBox1.getSelectedItem(), "一次函数")){
             try{
                 FirstFunctionCalc fs = new FirstFunctionCalc(Double.parseDouble(textField3.getText()), Double.parseDouble(textField1.getText()));
@@ -312,18 +354,52 @@ public class NewCalc extends JDialog {
         }else if(Objects.equals(comboBox1.getSelectedItem(), "二次函数")){
             try {
                 SecondFunctionCalc sf = new SecondFunctionCalc(Double.parseDouble(textField3.getText()), Double.parseDouble(textField1.getText()), Double.parseDouble(textField2.getText()));
-                calculate = sf.calculate(Double.parseDouble(textField4.getText()));
+                sf.Acalculate();
+                sf.Bcalculate();
+                calculate = sf.calculate(FIRST.ordinal());
+                calculate1 = sf.calculate(SECOND.ordinal());
             } catch (NumberFormatException e) {
                 throw new NumberFormatException("请输入数字");
             }
+        }else if (Objects.equals(comboBox1.getSelectedItem(), "一元二次方程计算")){
+            try {
+                SecondFunctionCalc sf = new SecondFunctionCalc(Double.parseDouble(textField3.getText()), Double.parseDouble(textField1.getText()), Double.parseDouble(textField2.getText()));
+                calculate = sf.calction(Double.parseDouble(textField4.getText()));
+            }catch (NumberFormatException e) {
+                throw new NumberFormatException("请输入数字");
+            }
         }
-        Object[] obj = new Object[1];
-        if (calculate != null){
-            obj[0] = calculate.toString();
+        else if (Objects.equals(comboBox1.getSelectedItem(), "一元一次方程计算")){
+            try {
+                FirstFunctionCalc fs = new FirstFunctionCalc(Double.parseDouble(textField3.getText()), Double.parseDouble(textField1.getText()));
+                calculate = fs.calction(Double.parseDouble(textField4.getText()));
+//                Object[] obj = new Object[1];
+//                obj[0] = calculate.toString();
+//                Results.setListData(obj);
+            }catch (NumberFormatException e) {
+                throw new NumberFormatException("请输入数字");
+            }
+        }
+        Object[] obj = new Object[2];
+        if (calculate != null) {
+                obj[0] = calculate.toString();
+            if (calculate1 != null) {
+                obj[1] = calculate1.toString();
+                calculate1 = null;
+            }
+            if(SecondFunctionCalc.isHasUnRoot()){
+                obj[0] = SecondFunctionCalc.RealPart +"+"+  SecondFunctionCalc.imagPart + "i";
+                obj[1] = SecondFunctionCalc.RealPart + "-" + SecondFunctionCalc.imagPart + "i";
+                SecondFunctionCalc.setHasUnRoot(false);//恢复判断
+            }
             Results.setListData(obj);
-        }else {
-            JOptionPane.showMessageDialog(null, "错误的输入", "错误", JOptionPane.ERROR_MESSAGE);
+            obj = null;
         }
+        else {
+            JOptionPane.showMessageDialog(null, "错误的输入", "错误", JOptionPane.ERROR_MESSAGE);
+
+        }
+        
     }
     private void onCancel(){
         dispose();

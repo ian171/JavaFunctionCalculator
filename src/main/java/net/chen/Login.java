@@ -1,5 +1,7 @@
 package net.chen;
 
+import net.chen.TypeRenderer.TypeRenderer;
+
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,12 +11,15 @@ import java.io.*;
 import java.util.Objects;
 import java.util.Properties;
 
+
 public class Login extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField UserName;
     private JPasswordField passwordField1;
+    private JLabel Memorize;
+    private MemoryMonitor memoryMonitor;
     Properties properties = new Properties();
     BufferedReader bufferedReader = new BufferedReader(new FileReader(new File("src/main/resources/config.properties")));
 
@@ -38,9 +43,19 @@ public class Login extends JDialog {
                 onCancel();
             }
         });
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    monitor();
+                }
+            }
+        });
+        memoryMonitor = new MemoryMonitor(this);
+        memoryMonitor.start();
 
         // 点击 X 时调用 onCancel()
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 onCancel();
@@ -95,5 +110,13 @@ public class Login extends JDialog {
         dialog.setVisible(true);
 
         //System.exit(0);
+    }
+    public void monitor() {
+        Runtime runtime = Runtime.getRuntime();
+        long freeMemory = runtime.freeMemory();
+
+        Memorize.setText(TypeRenderer.getNetFileSizeDescription(freeMemory));
+        runtime = null;
+
     }
 }

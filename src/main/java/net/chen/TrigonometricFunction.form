@@ -91,6 +91,9 @@
                 <item value="Sine"/>
                 <item value="Cosine"/>
                 <item value="Tan"/>
+                <item value="Cosecant"/>
+                <item value="Secant"/>
+                <item value="Cotangent"/>
               </model>
             </properties>
           </component>
