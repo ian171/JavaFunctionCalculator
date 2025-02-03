@@ -91,4 +91,5 @@ public class TrigonometricFunction {
     private void Warning(String message) throws HeadlessException {
         JOptionPane.showMessageDialog(null, message, "错误", JOptionPane.ERROR_MESSAGE);
     }
+
 }
